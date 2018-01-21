@@ -361,7 +361,7 @@ func supportedIAAS(iaas string) bool {
 
 func ValidateIAAS(state storage.State) error {
 	if !supportedIAAS(state.IAAS) {
-		return errors.New("--iaas [gcp, aws, azure] must be provided or BBL_IAAS must be set")
+		return errors.New("--iaas [gcp, aws, azure, vsphere] must be provided or BBL_IAAS must be set")
 	}
 	if state.IAAS == "aws" {
 		err := validateAWS(state.AWS)
@@ -392,11 +392,12 @@ func ValidateIAAS(state storage.State) error {
 
 func NeedsIAASCreds(command string) bool {
 	_, ok := map[string]struct{}{
-		"up":      struct{}{},
-		"down":    struct{}{},
-		"plan":    struct{}{},
-		"destroy": struct{}{},
-		"rotate":  struct{}{},
+		"up":       struct{}{},
+		"down":     struct{}{},
+		"plan":     struct{}{},
+		"destroy":  struct{}{},
+		"rotate":   struct{}{},
+		"clean-up": struct{}{},
 	}[command]
 	return ok
 }

@@ -20,6 +20,10 @@ import (
 	"github.com/cloudfoundry/bosh-bootloader/storage"
 	"github.com/cloudfoundry/bosh-bootloader/terraform"
 	proxy "github.com/cloudfoundry/socks5-proxy"
+	"github.com/genevievelesperance/leftovers"
+	awsleftovers "github.com/genevievelesperance/leftovers/aws"
+	azureleftovers "github.com/genevievelesperance/leftovers/azure"
+	gcpleftovers "github.com/genevievelesperance/leftovers/gcp"
 	"github.com/spf13/afero"
 
 	awscloudconfig "github.com/cloudfoundry/bosh-bootloader/cloudconfig/aws"
@@ -83,6 +87,8 @@ func main() {
 
 		gcpClient                 gcp.Client
 		availabilityZoneRetriever aws.AvailabilityZoneRetriever
+
+		deleter leftovers.Deleter
 	)
 	if appConfig.State.IAAS == "aws" && needsIAASCreds {
 		awsClient := aws.NewClient(appConfig.State.AWS, logger)
@@ -90,6 +96,11 @@ func main() {
 		availabilityZoneRetriever = awsClient
 		networkDeletionValidator = awsClient
 		networkClient = awsClient
+
+		deleter, err = awsleftovers.NewDeleter(logger, appConfig.State.AWS.AccessKeyID, appConfig.State.AWS.SecretAccessKey, appConfig.State.AWS.Region)
+		if err != nil {
+			log.Fatalf("\n\n%s\n", err)
+		}
 	} else if appConfig.State.IAAS == "gcp" && needsIAASCreds {
 		gcpClient, err = gcp.NewClient(appConfig.State.GCP, "")
 		if err != nil {
@@ -105,6 +116,11 @@ func main() {
 			log.Fatalf("\n\n%s\n", err)
 		}
 		appConfig.State = stateWithZones
+
+		deleter, err = gcpleftovers.NewDeleter(logger, appConfig.State.GCP.ServiceAccountKeyPath)
+		if err != nil {
+			log.Fatalf("\n\n%s\n", err)
+		}
 	} else if appConfig.State.IAAS == "azure" && needsIAASCreds {
 		azureClient, err := azure.NewClient(appConfig.State.Azure)
 		if err != nil {
@@ -113,6 +129,11 @@ func main() {
 
 		networkDeletionValidator = azureClient
 		networkClient = azureClient
+
+		deleter, err = azureleftovers.NewDeleter(logger, appConfig.State.Azure.ClientID, appConfig.State.Azure.ClientSecret, appConfig.State.Azure.SubscriptionID, appConfig.State.Azure.TenantID)
+		if err != nil {
+			log.Fatalf("\n\n%s\n", err)
+		}
 	}
 
 	var (
@@ -201,6 +222,7 @@ func main() {
 	commandSet["env-id"] = commands.NewStateQuery(logger, stateValidator, terraformManager, commands.EnvIDPropertyName)
 	commandSet["latest-error"] = commands.NewLatestError(logger, stateValidator)
 	commandSet["print-env"] = commands.NewPrintEnv(logger, stderrLogger, stateValidator, allProxyGetter, credhubGetter, terraformManager, afs)
+	commandSet["clean-up"] = commands.NewCleanup(deleter)
 
 	app := application.New(commandSet, appConfig, usage)
 

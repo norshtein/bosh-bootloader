@@ -62,5 +62,6 @@ func (l *Logger) Prompt(message string) bool {
 	if proceed == "yes" || proceed == "y" {
 		return true
 	}
+
 	return false
 }

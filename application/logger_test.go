@@ -60,7 +60,7 @@ var _ = Describe("Logger", func() {
 	})
 
 	Describe("Prompt", func() {
-		It("prompts for the given messge", func() {
+		It("returns the result of the prompt", func() {
 			logger.Prompt("do you like cheese?")
 
 			Expect(writer.String()).To(Equal("do you like cheese? (y/N): "))

@@ -70,17 +70,17 @@ func (p Plan) ParseArgs(args []string, state storage.State) (PlanConfig, error) 
 		config PlanConfig
 		lbArgs LBArgs
 	)
-	planFlags := flags.New("up")
-	planFlags.String(&config.Name, "name", "")
-	planFlags.String(&lbArgs.LBType, "lb-type", "")
-	planFlags.String(&lbArgs.CertPath, "lb-cert", "")
-	planFlags.String(&lbArgs.KeyPath, "lb-key", "")
-	planFlags.String(&lbArgs.Domain, "lb-domain", "")
+	f := flags.New("up")
+	f.String(&config.Name, "name", "")
+	f.String(&lbArgs.LBType, "lb-type", "")
+	f.String(&lbArgs.CertPath, "lb-cert", "")
+	f.String(&lbArgs.KeyPath, "lb-key", "")
+	f.String(&lbArgs.Domain, "lb-domain", "")
 	if state.IAAS == "aws" {
-		planFlags.String(&lbArgs.ChainPath, "lb-chain", "")
+		f.String(&lbArgs.ChainPath, "lb-chain", "")
 	}
 
-	err := planFlags.Parse(args)
+	err := f.Parse(args)
 	if err != nil {
 		return PlanConfig{}, err
 	}

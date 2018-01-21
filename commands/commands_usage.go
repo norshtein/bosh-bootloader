@@ -83,6 +83,8 @@ const (
 
 	PrintEnvCommandUsage = "Prints required BOSH environment variables"
 
+	CleanupCommandUsage = "Cleans up infrastructure with environment name"
+
 	LatestErrorCommandUsage = "Prints the output from the latest call to terraform"
 )
 
@@ -109,6 +111,8 @@ func (Version) Usage() string { return VersionCommandUsage }
 func (Usage) Usage() string { return UsageCommandUsage }
 
 func (PrintEnv) Usage() string { return PrintEnvCommandUsage }
+
+func (Cleanup) Usage() string { return CleanupCommandUsage }
 
 func (LatestError) Usage() string { return LatestErrorCommandUsage }
 
