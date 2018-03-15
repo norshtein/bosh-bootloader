@@ -41,7 +41,7 @@ import (
 	vsphereleftovers "github.com/genevieve/leftovers/vsphere"
 )
 
-var Version = "dev"
+var Version = "tosidev"
 
 func main() {
 	log.SetFlags(0)
