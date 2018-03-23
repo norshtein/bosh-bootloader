@@ -34,3 +34,6 @@ bbl/debug
 
 # Environment
 .env*
+
+# Binary file
+bbl
