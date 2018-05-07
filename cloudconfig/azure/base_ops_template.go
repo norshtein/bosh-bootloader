@@ -18,6 +18,19 @@ const (
     name: z3
 
 - type: replace
+  path: /compilation/vm_type
+  value: Standard_D2_v2
+
+- type: replace
+  path: /vm_types/-
+  value:
+    name: Standard_D2_v2
+    cloud_properties:
+      instance_type: Standard_D2_v2
+      ephemeral_disk:
+        size: 10240
+
+- type: replace
   path: /vm_types/name=default/cloud_properties?/instance_type
   value: Standard_D1_v2
 
@@ -86,7 +99,7 @@ const (
   value:
     ephemeral_disk:
       size: 10240
-    instance_type: Standard_GS2
+    instance_type: Standard_E8s_v3
 
 - type: replace
   path: /vm_types/name=sharedcpu/cloud_properties?
